@@ -1,0 +1,36 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 11-Feb-2018, 17:06:13
+    Author     : Chris Vaughan
+*/
+
+body {
+    color: #121212;
+    font-family: Helvetica, Arial, FreeSans, sans-serif;
+    font-size:14px;
+}
+#history,#monitoredbackups {
+    height:250px;
+    width:650px;
+    resize: both;
+    border:1px solid #ccc;
+    font-family: Lucida Console,monospace;
+    font:14px;
+    overflow:auto;
+    margin:5px;
+    margin-top:10px;
+}
+.dim{
+    color: #AAAAAA;
+}
+.backupname{
+    width: 400px;
+}
+.backupdate{
+    width: 400px;
+    display: inline;
+}
