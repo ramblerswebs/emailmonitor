@@ -23,9 +23,9 @@ class config {
     Const ERRORFROM = "admin@ramblers-webs.org.uk";
     Const ERRORTO = "admin@ramblers-webs.org.uk";
 
-    public $imapserver = "{mail.stackmail.com:143}";
-    public $imapuser = "admin@ramblers-webs.org.uk";
-    public $imappassword = "r^WWC3mst";
+    public $imapserver = "{mail.xxxxxxxxxxx.com:143}";
+    public $imapuser = "admin@xxxxxxxxxxxxxxxx.org.uk";
+    public $imappassword = "xxxxxxxx";
 
     public function getMoveFolder($type) {
         switch ($type) {
