@@ -3,7 +3,7 @@
 /*
  * To display any issues wih the backups
  */
-
+define("VERSION", "1.00");
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('assert.warning', 1);
@@ -83,7 +83,7 @@ foreach ($lines as $line_num => $line) {
     echo "<span class='dim'>" . sprintf("%'.04d\n", $line_num) . "</span> " . htmlspecialchars($line) . "<br />\n";
 }
 echo '</div>';
-
+echo "<div class='version'>Version: ".VERSION."</div>";
 echo "</body><html>";
 
 
