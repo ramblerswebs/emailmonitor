@@ -13,7 +13,7 @@ body {
     font-family: Helvetica, Arial, FreeSans, sans-serif;
     font-size:14px;
 }
-#history,#monitoredbackups {
+#history,#monitoredbackups,#monitoreddomains {
     height:250px;
     width:650px;
     resize: both;

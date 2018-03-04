@@ -42,6 +42,20 @@ if ($string === false) {
 }
 $backups_processed = false;
 
+// read web monitor records
+$file = config::WEBMONITORJSONFILE;
+$string = file_get_contents($file);
+if ($string === false) {
+    $domains = [];
+} else {
+    $domains = json_decode($string, true);
+    if ($domains === null) {
+        // error
+        $domains = [];
+    }
+}
+$domains_processed = false;
+
 $mailbox = imap_open($config->imapserver, $config->imapuser, $config->imappassword);
 if ($mailbox === false) {
     $err = "Unable to open mailbox" . PHP_EOL;
@@ -61,14 +75,14 @@ if ($folders == false) {
     sendError("Unable to access mailbox folders");
 } else {
     foreach ($folders as $val) {
-       // echo $val . "<br />\n";
+        // echo $val . "<br />\n";
     }
 }
 
 // echo "<h1>Headers in INBOX</h1>\n";
 $headers = imap_headers($mailbox);
 
-if ($headers == false) {
+if ($headers === false) {
     sendError("Unable to retrieve headers");
 } else {
     foreach ($headers as $val) {
@@ -105,7 +119,7 @@ foreach ($msgnos as $msgno) {
             }
             $backups[$backupname] = $backup;
             $backups_processed = true;
-            echo "Backup - " . $email->getBackupName() . "<br />\n";
+            echo "Backup - " . $backupname . "<br />\n";
             break;
         case config::REMOVEBACKUP:
             $backupname = $email->getBackupName();
@@ -124,6 +138,24 @@ foreach ($msgnos as $msgno) {
             break;
         case config::WEBMONITOR:
             echo "Web monitor <br />\n";
+            $domain = [];
+            $domainname = $email->getDomainName();
+            $domain['domain'] = $domainname;
+            $domain['emaildate'] = $email->getDate();
+            $domain['emailsubject'] = $email->getSubject();
+
+            if (array_key_exists($domainname, $domains)) {
+                $record = $domains[$domainname];
+                $datecreated = $domains[$domainname]['dateFirstRecord'];
+                $domain['dateFirstRecord'] = $datecreated;
+            } else {
+                // new record
+                $domain['dateFirstRecord'] = $email->getDate();
+                $log->addRecord("New domain", $domainname);
+            }
+            $domains[$domainname] = $domain;
+            $domains_processed = true;
+            echo "Web monitor - " . $domainname . "<br />\n";
             break;
         default:
             break;
@@ -144,10 +176,16 @@ imap_close($mailbox);
 // print_r($backups);
 if ($backups_processed) {
     $myJSON = json_encode($backups, JSON_PRETTY_PRINT);
-
     //echo $myJSON;
     file_put_contents(config::BACKUPRECORDSJSONFILE, $myJSON);
-// check file to see if any not backed up
+    // check file to see if any not backed up
+    // send email to say what new sites or not backup up sites
+}
+if ($domains_processed) {
+    $myJSON = json_encode($domains, JSON_PRETTY_PRINT);
+    //echo $myJSON;
+    file_put_contents(config::WEBMONITORJSONFILE, $myJSON);
+    // check file to see if any not backed up
     // send email to say what new sites or not backup up sites
 }
 $log->close();
@@ -164,7 +202,7 @@ function sendError($body) {
         echo 'Mailer Error: ' . $mailer->ErrorInfo;
     } else {
         echo "ERROR - an error has ben encountered";
-        echo "   ".$body;
+        echo "   " . $body;
         echo 'Email has been sent';
     }
 }

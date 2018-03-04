@@ -3,7 +3,7 @@
 /*
  * To display any issues wih the backups
  */
-define("VERSION", "1.00");
+define("VERSION", "1.10");
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('assert.warning', 1);
@@ -31,7 +31,21 @@ if ($string === false) {
     }
 }
 uasort($backups, 'cmp');
-$date = new DateTime('7 days ago');
+// read web monitor records
+$file = config::WEBMONITORJSONFILE;
+$string = file_get_contents($file);
+if ($string === false) {
+    $domains = [];
+} else {
+    $domains = json_decode($string, true);
+    if ($domains === null) {
+        // error
+        $domains = [];
+    }
+}
+asort($domains);
+$oneweekago = new DateTime('7 days ago');
+$twoweeksago = new DateTime('14 days ago');
 echo "<html><head>";
 echo "<link href=\"display.css\" rel=\"stylesheet\" type=\"text/css\" />";
 echo "</head><body>";
@@ -39,7 +53,7 @@ $header = true;
 foreach ($backups as $backup) {
     $backupDate = $backup['backupdate'];
     $bdate = new DateTime($backupDate);
-    if ($bdate <= $date) {
+    if ($bdate <= $oneweekago) {
         if ($header) {
             $header = false;
             echo "<h2>Backups older than 7 days</h2>";
@@ -74,6 +88,30 @@ foreach ($backups as $backup) {
 }
 echo '</div>';
 
+$header = true;
+foreach ($domains as $domain) {
+    $emaildate = $domain['emaildate'];
+    $bdate = new DateTime($emaildate);
+    if ($bdate <= $twoweeksago) {
+        if ($header) {
+            $header = false;
+            echo "<h2>Domains where no web monitor email for 14 days</h2>";
+        }
+        echo " [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $domain['domain'] . "</span><br/>";
+    }
+}
+
+echo "<h2>Monitored Domains</h2>";
+echo '<div id="monitoreddomains">';
+$line=1;
+foreach ($domains as $domain) {
+    $domainDate = $domain['emaildate'];
+    $bdate = new DateTime($domainDate);
+    echo "<span class='dim'>" . sprintf("%'.04d\n", $line) . "</span>  [" . $bdate->format('Y-m-d') . "] - <span class='domainname'>" . $domain['domain'] . "</span><br/>";
+    $line+=1;
+}
+echo '</div>';
+
 echo "<h2>Change Log</h2>";
 echo '<div id="history">';
 $lines = file(config::CHANGELOG);
@@ -83,6 +121,7 @@ foreach ($lines as $line_num => $line) {
     echo "<span class='dim'>" . sprintf("%'.04d\n", $line_num) . "</span> " . htmlspecialchars($line) . "<br />\n";
 }
 echo '</div>';
+echo '<p></p>';
 echo "<div class='version'>Version: ".VERSION."</div>";
 echo "</body><html>";
 

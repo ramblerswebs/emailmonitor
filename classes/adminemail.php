@@ -83,6 +83,27 @@ class adminemail {
         }
     }
 
+    public function getDomainName() {
+        if ($this->getType() == config::WEBMONITOR or $this->getType() == config::REMOVEWEBMONITOR) {
+            $text = $this->subject;
+            $items = explode(" ", $text);
+            foreach ($items as $item) {
+                switch ($item) {
+                    case "Remove":
+                    case "WebMonitor:":
+                    case "":
+                    case " ":
+                        break;
+                    default:
+                        return $item;
+                        break;
+                }
+            }
+        } else {
+            return "";
+        }
+    }
+
     public function getNoUpdates() {
         if ($this->getType() == config::JOOOMLAUPDATE) {
             $text = $this->subject;

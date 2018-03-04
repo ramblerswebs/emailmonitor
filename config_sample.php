@@ -18,6 +18,8 @@ class config {
     Const WEBMONITOR = 2;
     Const JOOOMLAUPDATE = 3;
     Const REMOVEBACKUP = 4;
+    const REMOVEWEBMONITOR = 5;
+    Const WEBMONITORJSONFILE = "data/domainrecords.json";
     Const BACKUPRECORDSJSONFILE = "data/backuprecords.json";
     Const CHANGELOG = "data/changelog.log";
     Const ERRORFROM = "admin@ramblers-webs.org.uk";
