@@ -13,12 +13,6 @@
  */
 class config {
 
-    Const UNKNOWN = 0;
-    Const BACKUP = 1;
-    Const WEBMONITOR = 2;
-    Const JOOOMLAUPDATE = 3;
-    Const REMOVEBACKUP = 4;
-    const REMOVEWEBMONITOR = 5;
     Const WEBMONITORJSONFILE = "data/domainrecords.json";
     Const BACKUPRECORDSJSONFILE = "data/backuprecords.json";
     Const CHANGELOG = "data/changelog.log";
@@ -31,16 +25,19 @@ class config {
 
     public function getMoveFolder($type) {
         switch ($type) {
-            case self::BACKUP:
+            case email::BACKUP:
                 return "INBOX/Backup";
                 break;
-            case self::REMOVEBACKUP:
+            case email::REMOVEBACKUP:
                 return "INBOX/Backup";
                 break;
-            case self::WEBMONITOR:
+            case email::WEBMONITOR:
                 return "INBOX/Web Monitors";
                 break;
-            case self::JOOOMLAUPDATE:
+            case email::REMOVEWEBMONITOR:
+                return "INBOX/Web Monitors";
+                break;
+            case email::JOOMLAUPDATE:
                 return "INBOX/Site updates";
                 break;
             default:
@@ -51,13 +48,13 @@ class config {
 
     public function getFolderPeriod($type) {
         switch ($type) {
-            case self::BACKUP:
+            case email::BACKUP:
                 return new DateInterval('P10D');
                 break;
-            case self::WEBMONITOR:
+            case email::WEBMONITOR:
                 return new DateInterval('P14D');
                 break;
-            case self::JOOOMLAUPDATE:
+            case email::JOOMLAUPDATE:
                 return new DateInterval('P14D');
                 break;
             default:

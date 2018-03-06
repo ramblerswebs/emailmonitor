@@ -29,32 +29,10 @@ $config = new config();
 $log = new changelog(config::CHANGELOG);
 
 // read file or create new records
-$file = config::BACKUPRECORDSJSONFILE;
-$string = file_get_contents($file);
-if ($string === false) {
-    $backups = [];
-} else {
-    $backups = json_decode($string, true);
-    if ($backups === null) {
-        // error
-        $backups = [];
-    }
-}
-$backups_processed = false;
+$backups = new jsonlogfile(config::BACKUPRECORDSJSONFILE, "Backup");
 
 // read web monitor records
-$file = config::WEBMONITORJSONFILE;
-$string = file_get_contents($file);
-if ($string === false) {
-    $domains = [];
-} else {
-    $domains = json_decode($string, true);
-    if ($domains === null) {
-        // error
-        $domains = [];
-    }
-}
-$domains_processed = false;
+$domains = new jsonlogfile(config::WEBMONITORJSONFILE, "Domain");
 
 $mailbox = imap_open($config->imapserver, $config->imapuser, $config->imappassword);
 if ($mailbox === false) {
@@ -65,14 +43,14 @@ if ($mailbox === false) {
             $err.= $error . PHP_EOL;
         }
     }
-    sendError($err);
+    functions::sendError($err);
     die();
 }
 // echo "<h1>Mailboxes</h1>\n";
 $folders = imap_listmailbox($mailbox, $config->imapserver, "*");
 
 if ($folders == false) {
-    sendError("Unable to access mailbox folders");
+    functions::sendError("Unable to access mailbox folders");
 } else {
     foreach ($folders as $val) {
         // echo $val . "<br />\n";
@@ -83,7 +61,7 @@ if ($folders == false) {
 $headers = imap_headers($mailbox);
 
 if ($headers === false) {
-    sendError("Unable to retrieve headers");
+    functions::sendError("Unable to retrieve headers");
 } else {
     foreach ($headers as $val) {
         //   echo $val . "<br />\n";
@@ -97,65 +75,38 @@ if ($msgnos === false) {
 
 foreach ($msgnos as $msgno) {
     $header = imap_headerinfo($mailbox, $msgno, 0, 1024);
-    $email = new adminemail($mailbox, $msgno);
+    $email = new email($mailbox, $msgno);
     $type = $email->getType();
     switch ($type) {
-        case config::BACKUP:
-            $backup = [];
-            $backupname = $email->getBackupName();
-            $backup['backupname'] = $backupname;
-            $backup['backupdate'] = $email->getDate();
-            $backup['emailsubject'] = $email->getSubject();
-            $backup['domain'] = $email->getDomain();
-            $backup['fromemail'] = $email->getFromEmail();
-            if (array_key_exists($backupname, $backups)) {
-                $record = $backups[$backupname];
-                $datecreated = $backups[$backupname]['dateFirstRecord'];
-                $backup['dateFirstRecord'] = $datecreated;
-            } else {
-                // new record
-                $backup['dateFirstRecord'] = $email->getDate();
-                $log->addRecord("New backup", $backupname);
-            }
-            $backups[$backupname] = $backup;
-            $backups_processed = true;
-            echo "Backup - " . $backupname . "<br />\n";
+        case email::BACKUP:
+            $item = [];
+            $name = $email->getBackupName();
+            $item['backupname'] = $name;
+            $item['backupdate'] = $email->getDate();
+            $item['emailsubject'] = $email->getSubject();
+            $item['domain'] = $email->getDomain();
+            $item['fromemail'] = $email->getFromEmail();
+            $backups->addItem($name, $item);
             break;
-        case config::REMOVEBACKUP:
-            $backupname = $email->getBackupName();
-            if (array_key_exists($backupname, $backups)) {
-                $backups_processed = true;
-                unset($backups[$backupname]);
-                echo "Remove backup - " . $backupname . "<br />\n";
-                $log->addRecord("Remove backup", $backupname);
-            } else {
-                sendError("Unable to remove backup for " . $backupname);
-            }
+        case email::REMOVEBACKUP:
+            $name = $email->getBackupName();
+            $backups->removeItem($name, $log);
             break;
-        case config::JOOOMLAUPDATE:
+        case email::JOOMLAUPDATE:
             // there is no need to monitor these emails as they record a central file
             echo "Joomla updates " . $email->getNoUpdates() . "<br />\n";
             break;
-        case config::WEBMONITOR:
-            echo "Web monitor <br />\n";
-            $domain = [];
-            $domainname = $email->getDomainName();
-            $domain['domain'] = $domainname;
-            $domain['emaildate'] = $email->getDate();
-            $domain['emailsubject'] = $email->getSubject();
-
-            if (array_key_exists($domainname, $domains)) {
-                $record = $domains[$domainname];
-                $datecreated = $domains[$domainname]['dateFirstRecord'];
-                $domain['dateFirstRecord'] = $datecreated;
-            } else {
-                // new record
-                $domain['dateFirstRecord'] = $email->getDate();
-                $log->addRecord("New domain", $domainname);
-            }
-            $domains[$domainname] = $domain;
-            $domains_processed = true;
-            echo "Web monitor - " . $domainname . "<br />\n";
+        case email::WEBMONITOR:
+            $item = [];
+            $name = $email->getDomainName();
+            $item['domain'] = $name;
+            $item['emaildate'] = $email->getDate();
+            $item['emailsubject'] = $email->getSubject();
+            $domains->addItem($name, $item);
+            break;
+        case email::REMOVEWEBMONITOR:
+            $name = $email->getDomainName();
+            $domains->removeItem($name, $log);
             break;
         default:
             break;
@@ -165,8 +116,8 @@ foreach ($msgnos as $msgno) {
         // move email to different folder
         imap_setflag_full($mailbox, $msgno, "\\Seen");
         $ok = imap_mail_move($mailbox, $msgno, $folder);
-        if ($ok === false) {
-            sendError("Unable to move email to another folder: " . $folder);
+        if ($ok == false) {
+            functions::sendError("Unable to move email to another folder: " . $folder);
         }
     }
 }
@@ -174,35 +125,6 @@ foreach ($msgnos as $msgno) {
 imap_expunge($mailbox);
 imap_close($mailbox);
 // print_r($backups);
-if ($backups_processed) {
-    $myJSON = json_encode($backups, JSON_PRETTY_PRINT);
-    //echo $myJSON;
-    file_put_contents(config::BACKUPRECORDSJSONFILE, $myJSON);
-    // check file to see if any not backed up
-    // send email to say what new sites or not backup up sites
-}
-if ($domains_processed) {
-    $myJSON = json_encode($domains, JSON_PRETTY_PRINT);
-    //echo $myJSON;
-    file_put_contents(config::WEBMONITORJSONFILE, $myJSON);
-    // check file to see if any not backed up
-    // send email to say what new sites or not backup up sites
-}
+$backups->storeItems();
+$domains->storeItems();
 $log->close();
-
-function sendError($body) {
-    $mailer = new PHPMailer\PHPMailer\PHPMailer;
-    $mailer->setFrom(config::ERRORFROM);
-    $mailer->addAddress(config::ERRORTO);
-    //$mailer->isHTML(true);
-    $mailer->Subject = "Ramblers-webs email monitor ERROR";
-    $mailer->Body = $body;
-    if (!$mailer->send()) {
-        echo 'Message could not be sent.';
-        echo 'Mailer Error: ' . $mailer->ErrorInfo;
-    } else {
-        echo "ERROR - an error has ben encountered";
-        echo "   " . $body;
-        echo 'Email has been sent';
-    }
-}

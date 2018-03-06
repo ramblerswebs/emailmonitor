@@ -5,7 +5,14 @@
  *
  * @author Chris Vaughan
  */
-class adminemail {
+class email {
+
+    Const UNKNOWN = 0;
+    Const BACKUP = 1;
+    Const WEBMONITOR = 2;
+    Const JOOMLAUPDATE = 3;
+    Const REMOVEBACKUP = 4;
+    const REMOVEWEBMONITOR = 5;
 
     private $header;
     private $subject;
@@ -42,26 +49,29 @@ class adminemail {
 
     public function getType() {
         if (strpos($this->subject, 'Backup ') === 0) {
-            return config::BACKUP;
+            return self::BACKUP;
         }
         if (strpos($this->subject, 'Update is available') === 0) {
-            return config::JOOOMLAUPDATE;
+            return self::JOOMLAUPDATE;
         }
         if (strpos($this->subject, 'updates are available') > 0) {
-            return config::JOOOMLAUPDATE;
+            return self::JOOMLAUPDATE;
         }
         if (strpos($this->subject, 'WebMonitor: ') === 0) {
-            return config::WEBMONITOR;
+            return self::WEBMONITOR;
+        }
+       if (strpos($this->subject, 'Remove WebMonitor: ') === 0) {
+            return self::REMOVEWEBMONITOR;
         }
         if (strpos($this->subject, 'Remove backup ') === 0) {
-            return config::REMOVEBACKUP;
+            return self::REMOVEBACKUP;
         }
 
-        return config::UNKNOWN;
+        return self::UNKNOWN;
     }
 
     public function getBackupName() {
-        if ($this->getType() == config::BACKUP or $this->getType() == config::REMOVEBACKUP) {
+        if ($this->getType() == self::BACKUP or $this->getType() == self::REMOVEBACKUP) {
             $text = $this->subject;
             $items = explode(" ", $text);
             foreach ($items as $item) {
@@ -84,13 +94,15 @@ class adminemail {
     }
 
     public function getDomainName() {
-        if ($this->getType() == config::WEBMONITOR or $this->getType() == config::REMOVEWEBMONITOR) {
+        if ($this->getType() == self::WEBMONITOR or $this->getType() == self::REMOVEWEBMONITOR) {
             $text = $this->subject;
             $items = explode(" ", $text);
             foreach ($items as $item) {
                 switch ($item) {
                     case "Remove":
                     case "WebMonitor:":
+                    case "NEW":
+                    case "INSTALL:":
                     case "":
                     case " ":
                         break;
@@ -105,7 +117,7 @@ class adminemail {
     }
 
     public function getNoUpdates() {
-        if ($this->getType() == config::JOOOMLAUPDATE) {
+        if ($this->getType() == self::JOOMLAUPDATE) {
             $text = $this->subject;
             $items = explode(" ", $text);
             $cno = $items[0];

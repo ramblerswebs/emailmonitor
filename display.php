@@ -50,64 +50,64 @@ echo "<html><head>";
 echo "<link href=\"display.css\" rel=\"stylesheet\" type=\"text/css\" />";
 echo "</head><body>";
 $header = true;
-foreach ($backups as $backup) {
-    $backupDate = $backup['backupdate'];
+foreach ($backups as $item) {
+    $backupDate = $item['backupdate'];
     $bdate = new DateTime($backupDate);
     if ($bdate <= $oneweekago) {
         if ($header) {
             $header = false;
             echo "<h2>Backups older than 7 days</h2>";
         }
-        echo " [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $backup['backupname'] . "</span><br/>";
+        echo " [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $item['backupname'] . "</span><br/>";
     }
 }
 
 $header = true;
-foreach ($backups as $backup) {
-    $backupDate = $backup['backupdate'];
+foreach ($backups as $item) {
+    $backupDate = $item['backupdate'];
     $bdate = new DateTime($backupDate);
-    $backupDate = $backup['dateFirstRecord'];
+    $backupDate = $item['dateFirstRecord'];
     $firstdate = new DateTime($backupDate);
     if ($bdate == $firstdate) {
         if ($header) {
             $header = false;
             echo "<h2>New backups</h2>";
         }
-        echo " [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $backup['backupname'] . "</span><br/>";
+        echo " [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $item['backupname'] . "</span><br/>";
     }
 }
 
 echo "<h2>Monitored Backups</h2>";
 echo '<div id="monitoredbackups">';
 $line=1;
-foreach ($backups as $backup) {
-    $backupDate = $backup['backupdate'];
+foreach ($backups as $item) {
+    $backupDate = $item['backupdate'];
     $bdate = new DateTime($backupDate);
-    echo "<span class='dim'>" . sprintf("%'.04d\n", $line) . "</span>  [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $backup['backupname'] . "</span><br/>";
+    echo "<span class='dim'>" . sprintf("%'.04d\n", $line) . "</span>  [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $item['backupname'] . "</span><br/>";
     $line+=1;
 }
 echo '</div>';
 
 $header = true;
-foreach ($domains as $domain) {
-    $emaildate = $domain['emaildate'];
+foreach ($domains as $item) {
+    $emaildate = $item['emaildate'];
     $bdate = new DateTime($emaildate);
     if ($bdate <= $twoweeksago) {
         if ($header) {
             $header = false;
             echo "<h2>Domains where no web monitor email for 14 days</h2>";
         }
-        echo " [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $domain['domain'] . "</span><br/>";
+        echo " [" . $bdate->format('Y-m-d') . "] - <span class='backupname'>" . $item['domain'] . "</span><br/>";
     }
 }
 
 echo "<h2>Monitored Domains</h2>";
 echo '<div id="monitoreddomains">';
 $line=1;
-foreach ($domains as $domain) {
-    $domainDate = $domain['emaildate'];
+foreach ($domains as $item) {
+    $domainDate = $item['emaildate'];
     $bdate = new DateTime($domainDate);
-    echo "<span class='dim'>" . sprintf("%'.04d\n", $line) . "</span>  [" . $bdate->format('Y-m-d') . "] - <span class='domainname'>" . $domain['domain'] . "</span><br/>";
+    echo "<span class='dim'>" . sprintf("%'.04d\n", $line) . "</span>  [" . $bdate->format('Y-m-d') . "] - <span class='domainname'>" . $item['domain'] . "</span><br/>";
     $line+=1;
 }
 echo '</div>';
