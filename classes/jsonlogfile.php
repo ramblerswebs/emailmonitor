@@ -33,14 +33,14 @@ class jsonlogfile {
         $this->items_processed = false;
     }
 
-    public function addItem($name, $item) {
+    public function addItem($name, $item, $date, $log) {
         if (array_key_exists($name, $this->items)) {
             // $record = $this->items[$name];
             $datecreated = $this->items[$name]['dateFirstRecord'];
             $item['dateFirstRecord'] = $datecreated;
         } else {
             // new record
-            $item['dateFirstRecord'] = $email->getDate();
+            $item['dateFirstRecord'] = $date;
             $log->addRecord("New " . $this->type, $name);
         }
         $this->items[$name] = $item;

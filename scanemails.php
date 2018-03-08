@@ -86,7 +86,7 @@ foreach ($msgnos as $msgno) {
             $item['emailsubject'] = $email->getSubject();
             $item['domain'] = $email->getDomain();
             $item['fromemail'] = $email->getFromEmail();
-            $backups->addItem($name, $item);
+            $backups->addItem($name, $item, $email->getDate(), $log);
             break;
         case email::REMOVEBACKUP:
             $name = $email->getBackupName();
@@ -102,7 +102,7 @@ foreach ($msgnos as $msgno) {
             $item['domain'] = $name;
             $item['emaildate'] = $email->getDate();
             $item['emailsubject'] = $email->getSubject();
-            $domains->addItem($name, $item);
+            $domains->addItem($name, $item, $email->getDate(), $log);
             break;
         case email::REMOVEWEBMONITOR:
             $name = $email->getDomainName();

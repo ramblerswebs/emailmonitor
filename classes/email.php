@@ -48,22 +48,26 @@ class email {
     }
 
     public function getType() {
-        if (strpos($this->subject, 'Backup ') === 0) {
+        $comp = strtolower($this->subject);
+        if (strpos($comp, 'backup ') === 0) {
             return self::BACKUP;
         }
-        if (strpos($this->subject, 'Update is available') === 0) {
+        if (strpos($comp, 'update is available') === 0) {
             return self::JOOMLAUPDATE;
         }
-        if (strpos($this->subject, 'updates are available') > 0) {
+        if (strpos($comp, 'updates are available') > 0) {
             return self::JOOMLAUPDATE;
         }
-        if (strpos($this->subject, 'WebMonitor: ') === 0) {
+        if (strpos($comp, 'webmonitor: ') === 0) {
             return self::WEBMONITOR;
         }
-       if (strpos($this->subject, 'Remove WebMonitor: ') === 0) {
+        if (strpos($comp, 'remove webmonitor: ') === 0) {
             return self::REMOVEWEBMONITOR;
         }
-        if (strpos($this->subject, 'Remove backup ') === 0) {
+        if (strpos($comp, 'remove webmonitor ') === 0) {
+            return self::REMOVEWEBMONITOR;
+        }
+        if (strpos($comp, 'remove backup ') === 0) {
             return self::REMOVEBACKUP;
         }
 
@@ -72,13 +76,12 @@ class email {
 
     public function getBackupName() {
         if ($this->getType() == self::BACKUP or $this->getType() == self::REMOVEBACKUP) {
-            $text = $this->subject;
+            $text = strtolower($this->subject);
             $items = explode(" ", $text);
             foreach ($items as $item) {
                 switch ($item) {
-                    case "Remove":
+                    case "remove":
                     case "backup":
-                    case "Backup":
                     case "of":
                     case "":
                     case " ":
@@ -95,14 +98,15 @@ class email {
 
     public function getDomainName() {
         if ($this->getType() == self::WEBMONITOR or $this->getType() == self::REMOVEWEBMONITOR) {
-            $text = $this->subject;
+            $text = strtolower($this->subject);
             $items = explode(" ", $text);
             foreach ($items as $item) {
                 switch ($item) {
-                    case "Remove":
-                    case "WebMonitor:":
-                    case "NEW":
-                    case "INSTALL:":
+                    case "remove":
+                    case "webmonitor:":
+                    case "webmonitor":
+                    case "new":
+                    case "install:":
                     case "":
                     case " ":
                         break;
