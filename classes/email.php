@@ -13,6 +13,7 @@ class email {
     Const JOOMLAUPDATE = 3;
     Const REMOVEBACKUP = 4;
     const REMOVEWEBMONITOR = 5;
+    Const WEBMONITORWITHERRORS = 6;
 
     private $header;
     private $subject;
@@ -70,6 +71,9 @@ class email {
         if (strpos($comp, 'remove backup ') === 0) {
             return self::REMOVEBACKUP;
         }
+        if (strpos($comp, 'with errors: webmonitor: ') === 0) {
+            return self::WEBMONITORWITHERRORS;
+        }
 
         return self::UNKNOWN;
     }
@@ -97,27 +101,36 @@ class email {
     }
 
     public function getDomainName() {
-        if ($this->getType() == self::WEBMONITOR or $this->getType() == self::REMOVEWEBMONITOR) {
-            $text = strtolower($this->subject);
-            $items = explode(" ", $text);
-            foreach ($items as $item) {
-                switch ($item) {
-                    case "remove":
-                    case "webmonitor:":
-                    case "webmonitor":
-                    case "new":
-                    case "install:":
-                    case "":
-                    case " ":
-                        break;
-                    default:
-                        return $item;
-                        break;
+        switch ($this->getType()) {
+            case self::WEBMONITOR :
+            case self::REMOVEWEBMONITOR :
+            case self::WEBMONITORWITHERRORS :
+                $text = strtolower($this->subject);
+                $items = explode(" ", $text);
+                foreach ($items as $item) {
+                    switch ($item) {
+                        case "with":
+                        case "errors:":
+                        case "remove":
+                        case "webmonitor:":
+                        case "webmonitor":
+                        case "new":
+                        case "install:":
+                        case "":
+                        case " ":
+                            break;
+                        default:
+                            return $item;
+                            break;
+                    }
                 }
-            }
-        } else {
-            return "";
+
+                break;
+
+            default:
+                break;
         }
+        return "";
     }
 
     public function getNoUpdates() {

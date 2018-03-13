@@ -97,6 +97,7 @@ foreach ($msgnos as $msgno) {
             echo "Joomla updates " . $email->getNoUpdates() . "<br />\n";
             break;
         case email::WEBMONITOR:
+        case email::WEBMONITORWITHERRORS:
             $item = [];
             $name = $email->getDomainName();
             $item['domain'] = $name;
