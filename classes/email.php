@@ -87,7 +87,32 @@ class email {
         if (strpos($comp, 'security exception on ') === 0) {
             return self::ADMINTOOLS;
         }
+        if (strpos($comp, 'user account temporarily blocked on ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'failed administrator login for user ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, ' logged in on ') > 0) {
+            return self::ADMINTOOLS;
+        }
+
         if (strpos($comp, 'automatic ip blocking notification for ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'configuration options for ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'critical file modified on ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'super users were added to ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'rescue url requested on ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'critical file modified on ') === 0) {
             return self::ADMINTOOLS;
         }
         if (strpos($comp, 'info: watchful notification') === 0) {
