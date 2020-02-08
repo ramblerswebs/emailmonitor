@@ -14,6 +14,9 @@ class email {
     Const REMOVEBACKUP = 4;
     const REMOVEWEBMONITOR = 5;
     Const WEBMONITORWITHERRORS = 6;
+    Const ADMINTOOLS = 7;
+    Const WATCHFULUPDATES = 8;
+    Const WATCHFUL = 9;
 
     private $header;
     private $subject;
@@ -25,7 +28,8 @@ class email {
 
     public function __construct($mbox, $value) {
         $this->header = imap_headerinfo($mbox, $value, 0, 1024);
-        $this->subject = $this->header->subject;
+        $text = $this->header->subject;
+        $this->subject = functions::decodeHeader($text);
         if ($this->subject === null) {
             $this->subject = "No subject";
         }
@@ -62,6 +66,9 @@ class email {
         if (strpos($comp, 'webmonitor: ') === 0) {
             return self::WEBMONITOR;
         }
+        if (strpos($comp, 'ramblers webs watchful: ') === 0) {
+            return self::WATCHFULUPDATES;
+        }
         if (strpos($comp, 'remove webmonitor: ') === 0) {
             return self::REMOVEWEBMONITOR;
         }
@@ -74,7 +81,24 @@ class email {
         if (strpos($comp, 'with errors: webmonitor: ') === 0) {
             return self::WEBMONITORWITHERRORS;
         }
-
+        if (strpos($comp, ') logged in ') > 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'security exception on ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'automatic ip blocking notification for ') === 0) {
+            return self::ADMINTOOLS;
+        }
+        if (strpos($comp, 'info: watchful notification') === 0) {
+            return self::WATCHFUL;
+        }
+        if (strpos($comp, 'website is now down: ') === 0) {
+            return self::WATCHFUL;
+        }
+        if (strpos($comp, 'website is now up: ') === 0) {
+            return self::WATCHFUL;
+        }
         return self::UNKNOWN;
     }
 

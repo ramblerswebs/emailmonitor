@@ -21,6 +21,7 @@ define('BASE_PATH', dirname(realpath(dirname(__FILE__))));
 chdir($exepath);
 require_once 'config.php';
 require_once 'classes/autoload.php';
+spl_autoload_register('autoload');
 require 'classes/phpmailer/src/PHPMailer.php';
 require 'classes/phpmailer/src/SMTP.php';
 require 'classes/phpmailer/src/Exception.php';

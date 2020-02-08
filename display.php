@@ -17,6 +17,7 @@ define('BASE_PATH', dirname(realpath(dirname(__FILE__))));
 chdir($exepath);
 require_once 'config.php';
 require_once 'classes/autoload.php';
+spl_autoload_register('autoload');
 $config = new config();
 // read file or create new records
 $file = config::BACKUPRECORDSJSONFILE;
@@ -45,7 +46,7 @@ if ($string === false) {
 }
 asort($domains);
 $oneweekago = new DateTime('7 days ago');
-$twoweeksago = new DateTime('14 days ago');
+$twoweeksago = new DateTime('15 days ago'); // to cover cases where runs take different times to complete.
 echo "<html><head>";
 echo "<link href=\"display.css\" rel=\"stylesheet\" type=\"text/css\" />";
 echo "</head><body>";
