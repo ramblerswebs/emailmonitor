@@ -39,7 +39,7 @@ class email {
             $this->emailfrom = $this->from->mailbox . '@' . $this->from->host;
             $this->domain = $this->to->host;
         } else {
-            $this->emailfrom == "";
+            $this->emailfrom = "";
             $this->domain = "";
         }
 
