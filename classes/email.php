@@ -34,9 +34,15 @@ class email {
             $this->subject = "No subject";
         }
         $this->from = $this->header->from[0];
-        $this->to = $this->header->to[0];
-        $this->emailfrom = $this->from->mailbox . '@' . $this->from->host;
-        $this->domain = $this->to->host;
+        if (isset($this->header->to[0])) {
+            $this->to = $this->header->to[0];
+            $this->emailfrom = $this->from->mailbox . '@' . $this->from->host;
+            $this->domain = $this->to->host;
+        } else {
+            $this->emailfrom == "";
+            $this->domain = "";
+        }
+
         $this->date = $this->header->date;
     }
 
