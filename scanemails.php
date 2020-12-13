@@ -38,10 +38,12 @@ $domains = new jsonlogfile(config::WEBMONITORJSONFILE, "Domain");
 $mailbox = imap_open($config->imapserver, $config->imapuser, $config->imappassword);
 if ($mailbox === false) {
     $err = "Unable to open mailbox" . PHP_EOL;
+    $err .= "Mail box: " . $config->imapserver . PHP_EOL;
+    $err .= "User: " . $config->imapuser . PHP_EOL;
     $errors = imap_alerts();
     if ($errors != false) {
         foreach ($errors as $error) {
-            $err.= $error . PHP_EOL;
+            $err .= $error . PHP_EOL;
         }
     }
     functions::sendError($err);
