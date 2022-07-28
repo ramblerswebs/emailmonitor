@@ -34,18 +34,27 @@ $backups = new jsonlogfile(config::BACKUPRECORDSJSONFILE, "Backup");
 
 // read web monitor records
 $domains = new jsonlogfile(config::WEBMONITORJSONFILE, "Domain");
+$err = '';
+$mailbox = null;
 
-$mailbox = imap_open($config->imapserver, $config->imapuser, $config->imappassword);
-if ($mailbox === false) {
-    $err = "Unable to open mailbox" . PHP_EOL;
-    $err .= "Mail box: " . $config->imapserver . PHP_EOL;
-    $err .= "User: " . $config->imapuser . PHP_EOL;
-    $errors = imap_alerts();
-    if ($errors != false) {
-        foreach ($errors as $error) {
-            $err .= $error . PHP_EOL;
+for ($retries = 1; $retries <= 2; $retries++) {
+    $mailbox = imap_open($config->imapserver, $config->imapuser, $config->imappassword);
+    if ($mailbox === false) {
+        $err = "Unable to open mailbox" . PHP_EOL;
+        $err .= "Mail box: " . $config->imapserver . PHP_EOL;
+        $err .= "User: " . $config->imapuser . PHP_EOL;
+        $errors = imap_errors();
+        if ($errors != false) {
+            foreach ($errors as $error) {
+                $err .= $error . PHP_EOL;
+            }
         }
+        sleep(1);
+    } else {
+        break;
     }
+}
+if ($mailbox === false) {
     functions::sendError($err);
     die();
 }
@@ -132,3 +141,4 @@ imap_close($mailbox);
 $backups->storeItems();
 $domains->storeItems();
 $log->close();
+echo "Finished";
