@@ -7,10 +7,10 @@
  */
 class functions {
 
-    public static function sendError($body) {
+    public static function sendError($email,$body) {
         $mailer = new PHPMailer\PHPMailer\PHPMailer;
-        $mailer->setFrom(config::ERRORFROM);
-        $mailer->addAddress(config::ERRORTO);
+        $mailer->setFrom($email);
+        $mailer->addAddress($email);
         //$mailer->isHTML(true);
         $mailer->Subject = "Ramblers-webs email monitor ERROR";
         $mailer->Body = $body;

@@ -19,6 +19,10 @@ class changelog {
     public function __construct($filename) {
         $this->file = $filename;
         $this->handle = fopen($this->file, "a"); //append
+        if ($this->handle===false){
+            echo "ERROR: unable to set up log file ".$filename;
+            die();
+        }
     }
 
     public function fileOpen() {
@@ -33,7 +37,7 @@ class changelog {
     }
 
     public function close() {
-        
+        fclose($this->handle);
     }
 
 }

@@ -9,12 +9,14 @@ class jsonlogfile {
 
     private $file;
     private $type;
+    private $log;
     private $items;
     private $items_processed;
 
-    public function __construct($file, $type) {
+    public function __construct($file, $type, $log) {
         $this->file = $file;
         $this->type = $type;
+        $this->log = $log;
         if (file_exists($file)) {
             $string = file_get_contents($file);
         } else {
@@ -33,7 +35,7 @@ class jsonlogfile {
         $this->items_processed = false;
     }
 
-    public function addItem($name, $item, $date, $log) {
+    public function addItem($name, $item, $date) {
         if (array_key_exists($name, $this->items)) {
             // $record = $this->items[$name];
             $datecreated = $this->items[$name]['dateFirstRecord'];
@@ -41,23 +43,20 @@ class jsonlogfile {
         } else {
             // new record
             $item['dateFirstRecord'] = $date;
-            $log->addRecord("New " . $this->type, $name);
+            $this->log->addRecord("New " . $this->type, $name);
         }
         $this->items[$name] = $item;
         $this->items_processed = true;
-        echo $this->type . " - " . $name . "<br />\n";
     }
 
-    public function removeItem($name, $log) {
-
+    public function removeItem($name) {
         if (array_key_exists($name, $this->items)) {
             $this->items_processed = true;
             unset($this->items[$name]);
-            echo "Remove " . $this->type . " - " . $name . "<br />\n";
-            $log->addRecord("Remove " . $this->type, $name);
-        } else {
-            functions::sendError("Unable to remove " . $this->type . " for " . $name);
+            $this->log->addRecord("Remove " . $this->type, $name);
+            return true;
         }
+        return false;
     }
 
     Public function storeItems() {
