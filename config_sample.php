@@ -9,9 +9,9 @@ class config extends configbase {
 
     public function __construct() {
         $this->test = true; // displays config data 
-        $this->email = "admin@cevsystems.co.uk";
+        $this->email = "someone@somewhere.com";
         $this->imapserver = "{mail.stackmail.com:993/imap/ssl}";
-        $this->imapuser = "admin@cevsystems.co.uk";
+        $this->imapuser = "admin@********.com";
         $this->imappassword = "*********";
         $this->changelog = "data/changelog.log";
         $this->webmonitor = [

@@ -1,8 +1,4 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
+
 /* 
     Created on : 11-Feb-2018, 17:06:13
     Author     : Chris Vaughan
@@ -13,24 +9,20 @@ body {
     font-family: Helvetica, Arial, FreeSans, sans-serif;
     font-size:14px;
 }
-#history,#monitoredbackups,#monitoreddomains {
-    height:250px;
-    width:650px;
-    resize: both;
-    border:1px solid #ccc;
-    font-family: Lucida Console,monospace;
-    font:14px;
-    overflow:auto;
-    margin:5px;
-    margin-top:10px;
+table {
+    border-collapse: collapse;
 }
-.dim{
-    color: #AAAAAA;
+td,  th {
+    border: 3px solid #AAAAAA;
+    padding: 4px;
 }
-.backupname{
-    width: 400px;
+tr:nth-child(even){
+    background-color: #f2f2f2;
 }
-.backupdate{
-    width: 400px;
-    display: inline;
+
+tr:hover {
+    background-color: #ddd;
+}
+.error{
+    color:red;
 }
