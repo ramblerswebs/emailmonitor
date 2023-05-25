@@ -18,7 +18,7 @@ chdir($exepath);
 
 require_once 'classes/autoload.php';
 spl_autoload_register('autoload');
-require_once 'configtest.php';
+require_once 'config.php';
 $config = new config();
 // read file or create new records
 $file = $config->getBackupsFile();

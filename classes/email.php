@@ -17,7 +17,7 @@ class Email {
     private $body = "";
 
     public function __construct($mbox, $msgno) {
-        
+
         $this->header = imap_headerinfo($mbox, $msgno, 0, 1024);
         if ($this->header === false) {
             // connection lost
@@ -38,6 +38,9 @@ class Email {
             $this->domain = "";
         }
         $this->body = imap_fetchbody($mbox, $msgno, 1.2);
+        if (!strlen($this->body) > 0) {
+            $this->body = imap_fetchbody($mbox, $msgno, 1);
+        }
         $this->date = $this->header->date;
     }
 
@@ -46,7 +49,7 @@ class Email {
     }
 
     public function getBody() {
-        return  $this->body;
+        return $this->body;
     }
 
     public function getFromDomain() {

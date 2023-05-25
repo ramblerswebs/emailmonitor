@@ -25,8 +25,8 @@ require 'classes/phpmailer/src/PHPMailer.php';
 require 'classes/phpmailer/src/SMTP.php';
 require 'classes/phpmailer/src/Exception.php';
 spl_autoload_register('autoload');
-require_once 'configtest.php';
-// require_once 'config.php';
+//require_once 'configtest.php';
+require_once 'config.php';
 
    
 echo "<html><head>";
