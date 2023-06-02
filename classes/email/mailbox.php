@@ -29,8 +29,14 @@ class EmailMailbox {
     }
 
     private function openEmail($imapserver, $imapuser, $imappassword) {
-        //  for ($retries = 1; $retries <= 2; $retries++) {
-        $imap = imap_open($imapserver, $imapuser, $imappassword, 0, 3);
+        for ($retries = 1; $retries <= 3; $retries++) {
+            $imap = imap_open($imapserver, $imapuser, $imappassword);
+            if (($imap === false)) {
+                sleep(2);
+            } else {
+                break;
+            }
+        }
         if ($imap === false) {
             $err = "Unable to open mailbox" . PHP_EOL;
             $err .= "Mail box: " . $imapserver . PHP_EOL;
